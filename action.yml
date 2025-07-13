@@ -7,7 +7,7 @@ branding:
 runs:
   using: "composite"
   steps:
-    - name: Run CodeGlide
+    - name: Run Codeglide MCP gen
       shell: bash
       run: |
         mkdir -p input mcpserver
