@@ -1,0 +1,27 @@
+name: "CodeGlide"
+description: "Run codeglide to create MCP server for APIs. Input dir is /input and output dir is /mcpserver. Input dir should contain the API spec in OpenAPI 3.0.0. format."
+branding:
+  icon: "zap"
+  color: "purple"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run CodeGlide
+      shell: bash
+      run: |
+        mkdir -p input mcpserver
+        echo "Running container..."
+        docker run --rm \
+          -e GITHUB_REPOSITORY="${{ github.repository }}" \
+          -e GITHUB_ACTOR="${{ github.actor }}" \
+          -e GITHUB_ACTIONS=$GITHUB_ACTIONS \
+          -v "${{ github.workspace }}/input:/app/input" \
+          -v "${{ github.workspace }}/mcpserver:/app/output" \
+          ghcr.io/codeglide/mcpgen:latest
+
+    - name: Upload MCP Server
+      uses: actions/upload-artifact@v4
+      with:
+        name: mcpserver
+        path: mcpserver/
