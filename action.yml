@@ -1,8 +1,14 @@
 name: "CodeGlide"
-description: "Run codeglide to create MCP server for APIs. Input dir is /input and output dir is /mcpserver. Input dir should contain the API spec in OpenAPI 3.0.0. format."
+description: "Run codeglide to create MCP server for APIs. Input dir contains API source code."
 branding:
   icon: "zap"
   color: "purple"
+
+inputs:
+  input_directory:
+    description: 'Input directory containing API source code (relative to workspace). Defaults to project root.'
+    required: false
+    default: '.'
 
 runs:
   using: "composite"
@@ -10,18 +16,26 @@ runs:
     - name: Run Codeglide MCP gen
       shell: bash
       run: |
-        mkdir -p input mcpserver
+        mkdir -p "generated-mcp"
         echo "Running container..."
+        
+        # Handle directory mounting (defaults to project root)
+        if [[ "${{ inputs.input_directory }}" == "." ]]; then
+          INPUT_PATH="${{ github.workspace }}"
+        else
+          INPUT_PATH="${{ github.workspace }}/${{ inputs.input_directory }}"
+        fi
+        
         docker run --rm \
           -e GITHUB_REPOSITORY="${{ github.repository }}" \
           -e GITHUB_ACTOR="${{ github.actor }}" \
           -e GITHUB_ACTIONS=$GITHUB_ACTIONS \
-          -v "${{ github.workspace }}/input:/app/input" \
-          -v "${{ github.workspace }}/mcpserver:/app/output" \
+          -v "$INPUT_PATH:/app/input" \
+          -v "${{ github.workspace }}/generated-mcp:/app/output" \
           ghcr.io/codeglide/mcpgen:latest
 
     - name: Upload MCP Server
       uses: actions/upload-artifact@v4
       with:
-        name: mcpserver
-        path: mcpserver/
+        name: generated-mcp
+        path: generated-mcp/ 
