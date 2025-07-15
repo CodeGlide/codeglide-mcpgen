@@ -10,6 +10,7 @@ Generate MCP (Model Context Protocol) servers from your API source code using Co
   with:
     input_directory: '.'  # Optional, defaults to root directory
 ```
+**Sample Workflow:**  [docs/workflow.yml](https://github.com/CodeGlide/codeglide-mcpgen/blob/main/docs/sample-workflow.yml) 
 
 ## Output
 
