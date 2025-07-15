@@ -2,7 +2,7 @@ name: "CodeGlide MCP Generator"
 description: "Run codeglide to create MCP server for APIs. Input dir contains API source code."
 branding:
   icon: "zap"
-  color: "violet"
+  color: "purple"
 
 inputs:
   input_directory:
