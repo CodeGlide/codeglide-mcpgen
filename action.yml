@@ -20,7 +20,7 @@ runs:
         echo "Running container..."
         
         # Handle directory mounting (defaults to project root)
-        if [[ "${{ inputs.input_directory }}" == "." ]]; then
+        if [[ "${{ inputs.input_directory }}" == "." ]] || [[ -z "${{ inputs.input_directory }}" ]]; then
           INPUT_PATH="${{ github.workspace }}"
         else
           INPUT_PATH="${{ github.workspace }}/${{ inputs.input_directory }}"
