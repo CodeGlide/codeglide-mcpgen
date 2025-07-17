@@ -1,0 +1,31 @@
+name: codeglide MCP gen commit
+
+on:
+  workflow_dispatch:
+    inputs:
+      input_directory:
+        description: 'Directory containing API source code (relative to workspace)'
+        type: string
+        required: false
+        default: '.'
+      create_branch_and_commit:
+        description: 'Create branch and commit'
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  
+
+    - name: codeglide MCP generator
+      uses: CodeGlide/codeglide-mcpgen@v1.0.2
+      with:
+        input_directory: ${{ inputs.input_directory }}
+        create_pr: ${{ inputs.create_branch_and_commit }}
+        
