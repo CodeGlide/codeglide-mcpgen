@@ -9,6 +9,11 @@ inputs:
     description: 'Input directory containing API source code (relative to workspace). Defaults to project root.'
     required: false
     default: '.'
+  create_branch_and_commit:
+    description: 'Create Branch and commit with generated code. Else, MCP is uploaded as artifact'
+    required: false
+    default: false
+    type: boolean
 
 runs:
   using: "composite"
@@ -34,7 +39,39 @@ runs:
           -v "${{ github.workspace }}/generated-mcp:/app/output" \
           ghcr.io/codeglide/mcpgen:latest
 
+    - name: Create Branch and commit
+      if: ${{ inputs.create_branch_and_commit }}
+      shell: bash
+      run: |
+        # Configure git with GitHub Actions identity
+        git config --global user.name "codeglide-github-actions[bot]"
+        git config --global user.email "codeglide-github-actions[bot]@users.noreply.github.com"
+
+        # Create new branch
+        BRANCH_NAME="feat/mcp-server-updated/$(date +%Y-%m-%d)--$(date +%H-%M-%S)"
+        git checkout -b $BRANCH_NAME
+        
+        # Create MCP directory if it doesn't exist
+        mkdir -p MCP/MCPServer
+        
+        # Copy generated files
+        cp -r generated-mcp/* MCP/MCPServer/
+        
+        # Commit and push
+        git add MCP/MCPServer
+        git commit -m "feat: codeglide Auto-generated MCP server code
+
+        Triggered by: @${{ github.actor }}"
+        git push origin $BRANCH_NAME
+
+        echo "Branch created and pushed successfully!"
+        echo "Branch name: $BRANCH_NAME"
+        echo ""
+        echo "To create a PR, visit:"
+        echo "https://github.com/${{ github.repository }}/compare/main...$BRANCH_NAME"
+
     - name: Upload MCP Server
+      if: ${{ !inputs.create_branch_and_commit }}
       uses: actions/upload-artifact@v4
       with:
         name: generated-mcp
