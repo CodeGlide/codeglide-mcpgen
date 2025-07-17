@@ -1,4 +1,4 @@
-name: codeglide MCP gen commit
+name: codeglide MCP gen commit/PR
 
 on:
   workflow_dispatch:
@@ -8,11 +8,21 @@ on:
         type: string
         required: false
         default: '.'
-      create_branch_and_commit:
-        description: 'Create branch and commit'
+      create_pr:
+        description: 'Create PR with generated code'
         type: boolean
         required: false
         default: false
+      create_branch_and_commit:
+        description: 'Create branch and commit with generated code'
+        type: boolean
+        required: false
+        default: false
+
+# Add permissions 
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   generate:
@@ -20,12 +30,11 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  
 
     - name: codeglide MCP generator
-      uses: CodeGlide/codeglide-mcpgen@v1.0.2
+      uses: CodeGlide/codeglide-mcpgen@v1.0.3
       with:
         input_directory: ${{ inputs.input_directory }}
-        create_pr: ${{ inputs.create_branch_and_commit }}
-        
+        create_pr: ${{ inputs.create_pr }}
+        create_branch_and_commit: ${{ inputs.create_branch_and_commit }}
+
