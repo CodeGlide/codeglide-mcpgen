@@ -35,7 +35,7 @@ runs:
         else
           INPUT_PATH="${{ github.workspace }}/${{ inputs.input_directory }}"
         fi
-        
+        docker pull --quiet ghcr.io/codeglide/mcpgen:latest>/dev/null
         docker run --rm \
           -e GITHUB_REPOSITORY="${{ github.repository }}" \
           -e GITHUB_ACTOR="${{ github.actor }}" \
