@@ -6,11 +6,15 @@ Generate MCP (Model Context Protocol) servers from your API source code using Co
 
 ```yaml
 - name: CodeGlide MCP Generator
-  uses: CodeGlide/codeglide-mcpgen@v1.0.0
+  uses: CodeGlide/codeglide-mcpgen@v1.0.5
   with:
-    input_directory: '.'  # Optional, defaults to root directory
+    input_directory: ${{ inputs.input_directory }}
+    create_pr: ${{ inputs.create_pr }}
+    create_branch_and_commit: ${{ inputs.create_branch_and_commit }}
 ```
-**Sample Workflow:**  [docs/workflow.yml](https://github.com/CodeGlide/codeglide-mcpgen/blob/main/docs/sample-workflow.yml) 
+**Sample Workflow:**  [docs/workflow.yml](https://github.com/CodeGlide/codeglide-mcpgen/blob/main/docs/sample-commit-workflow.yml) 
+
+**Marketplace Listing:** https://github.com/marketplace/actions/codeglide-mcp-generator
 
 ## Output
 
