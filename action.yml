@@ -60,14 +60,21 @@ runs:
         BRANCH_NAME="feat/mcp-server-updated/$(date +%Y-%m-%d)--$(date +%H-%M-%S)"
         git checkout -b $BRANCH_NAME
         
+        # Determine MCP directory location
+        if [[ "${{ inputs.input_directory }}" == "." ]] || [[ -z "${{ inputs.input_directory }}" ]]; then
+          MCP_DIR="MCP"
+        else
+          MCP_DIR="${{ inputs.input_directory }}/MCP"
+        fi
+        
         # Create MCP directory if it doesn't exist
-        mkdir -p MCP
+        mkdir -p "$MCP_DIR"
         
         # Copy generated files
-        cp -r generated-mcp/* MCP/
+        cp -r generated-mcp/* "$MCP_DIR/"
         
         # Commit and push
-        git add MCP
+        git add "$MCP_DIR"
         git commit -m "feat: codeglide Auto-generated MCP server code
 
         Triggered by: @${{ github.actor }}"
@@ -113,5 +120,4 @@ runs:
       with:
         name: generated-mcp
         path: generated-mcp/ 
-
 
