@@ -45,13 +45,15 @@ runs:
           ghcr.io/codeglide/mcpgen:latest
 
     - name: Create PR / Branch
-      if: ${{ inputs.create_pr || inputs.create_branch_and_commit }}
+      if: ${{ inputs.create_pr == true || inputs.create_branch_and_commit == true }}
       shell: bash
       id: branch_creation
       continue-on-error: true
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
+        echo "Creating branch and/or PR as requested..."
+        
         # Configure git with GitHub Actions identity
         git config --global user.name "CodeGlide-[bot]"
         git config --global user.email "codeglide-[bot]@users.noreply.github.com"
@@ -86,6 +88,7 @@ runs:
           
           # Try to create PR if requested
           if [[ "${{ inputs.create_pr }}" == "true" ]]; then
+            echo "Creating pull request..."
             PR_URL=$(gh pr create \
               --base "${{ github.ref_name }}" \
               --head "$BRANCH_NAME" \
@@ -104,6 +107,7 @@ runs:
               echo "https://github.com/${{ github.repository }}/compare/${{ github.ref_name }}...$BRANCH_NAME"
             fi
           else
+            echo "Branch created successfully (no PR requested)"
             echo "To create a PR manually, visit:"
             echo "https://github.com/${{ github.repository }}/compare/${{ github.ref_name }}...$BRANCH_NAME"
           fi
@@ -114,10 +118,10 @@ runs:
           exit 1
         fi
 
-    - name: Upload MCP Server
-      if: ${{ !inputs.create_pr && !inputs.create_branch_and_commit || (steps.branch_creation.outputs.success != 'true') }}
+    - name: Upload MCP Server as Artifact
+      if: ${{ (inputs.create_pr != true && inputs.create_branch_and_commit != true) || (steps.branch_creation.outputs.success != 'true') }}
       uses: actions/upload-artifact@v4
       with:
-        name: generated-mcp
-        path: generated-mcp/ 
+        name: generated-mcp-server
+        path: generated-mcp/
 
