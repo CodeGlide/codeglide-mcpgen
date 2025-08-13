@@ -32,7 +32,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: codeglide MCP generator
-      uses: CodeGlide/codeglide-mcpgen@v1.0.3
+      uses: CodeGlide/codeglide-mcpgen@v1.0.7
       with:
         input_directory: ${{ inputs.input_directory }}
         create_pr: ${{ inputs.create_pr }}
