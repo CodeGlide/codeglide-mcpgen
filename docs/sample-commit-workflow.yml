@@ -38,3 +38,11 @@ jobs:
         create_pr: ${{ inputs.create_pr }}
         create_branch_and_commit: ${{ inputs.create_branch_and_commit }}
 
+- name: CodeGlide MCP Generator
+  uses: CodeGlide/codeglide-mcpgen@v1.0.7
+  - name: CodeGlide MCP Generator
+  uses: CodeGlide/codeglide-mcpgen@v1.0.7
+  with:
+    input_directory: ${{ inputs.input_directory }}
+    create_pr: ${{ inputs.create_pr }}
+    create_branch_and_commit: ${{ inputs.create_branch_and_commit }}
