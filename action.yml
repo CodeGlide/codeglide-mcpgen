@@ -44,7 +44,7 @@ runs:
           -e GITHUB_REPOSITORY="${{ github.repository }}" \
           -e GITHUB_ACTOR="${{ github.actor }}" \
           -e GITHUB_ACTIONS=$GITHUB_ACTIONS \
-          -e CUSTOM_HEADERS="${{ inputs.custom_headers }}" \
+          --env CUSTOM_HEADERS='${{ inputs.custom_headers }}' \
           -v "$INPUT_PATH:/app/input" \
           -v "${{ github.workspace }}/generated-mcp:/app/output" \
           ghcr.io/codeglide/mcpgen:latest
