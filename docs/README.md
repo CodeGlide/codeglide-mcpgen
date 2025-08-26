@@ -25,9 +25,25 @@ on:
   workflow_dispatch:
     inputs:
       input_directory:
-        description: 'Directory containing API source code'
+        description: 'Directory containing API source code (relative to workspace)'
+        type: string
         required: false
         default: '.'
+      custom_headers:
+        description: 'Custom headers in API requests - {"key":"value"}'
+        type: string
+        required: false
+        default: ''
+      create_pr:
+        description: 'Create PR with generated code'
+        type: boolean
+        required: false
+        default: false
+      create_branch_and_commit:
+        description: 'Create branch and commit with generated code'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   generate:
@@ -35,9 +51,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Generate MCP Server
-      uses: CodeGlide/mcp-gen@v1.0.0
+      uses: CodeGlide/mcp-gen@v1.0.9
       with:
-        input_directory: ${{ inputs.input_directory || '.' }}
+        input_directory: ${{ inputs.input_directory }}
+        create_pr: ${{ inputs.create_pr }}
+        create_branch_and_commit: ${{ inputs.create_branch_and_commit }}
+        custom_headers: ${{ inputs.custom_headers }}
 ```
 
 ## How It Works
