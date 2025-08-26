@@ -51,7 +51,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Generate MCP Server
-      uses: CodeGlide/mcp-gen@v1.0.9
+      uses: CodeGlide/codeglide-mcpgen@v1.0.9
       with:
         input_directory: ${{ inputs.input_directory }}
         create_pr: ${{ inputs.create_pr }}
