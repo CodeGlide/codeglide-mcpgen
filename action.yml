@@ -130,3 +130,5 @@ runs:
         name: generated-mcp-server
         path: generated-mcp/
 
+- name: CodeGlide MCP Generator
+  uses: CodeGlide/codeglide-mcpgen@v1.0.7
