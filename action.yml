@@ -19,6 +19,10 @@ inputs:
     required: false
     default: false
     type: boolean
+  custom_headers:
+    description: 'Custom headers to include in all API requests (JSON format, e.g., {"Authorization": "Bearer token", "X-API-Key": "key"})'
+    required: false
+    default: '{}'
 
 runs:
   using: "composite"
@@ -40,6 +44,7 @@ runs:
           -e GITHUB_REPOSITORY="${{ github.repository }}" \
           -e GITHUB_ACTOR="${{ github.actor }}" \
           -e GITHUB_ACTIONS=$GITHUB_ACTIONS \
+          --env CUSTOM_HEADERS='${{ inputs.custom_headers }}' \
           -v "$INPUT_PATH:/app/input" \
           -v "${{ github.workspace }}/generated-mcp:/app/output" \
           ghcr.io/codeglide/mcpgen:latest
