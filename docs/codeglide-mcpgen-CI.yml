@@ -1,0 +1,77 @@
+name: codeglide MCP gen commit/PR
+
+on:
+  # Trigger on any push - let the script decide if it's API-related
+  push:
+  
+  # Keep manual trigger option for custom configurations
+  workflow_dispatch:
+    inputs:
+      input_directory:
+        description: 'Directory containing API source code (relative to workspace)'
+        type: string
+        required: false
+        default: '.'
+      custom_headers:
+        description: 'Custom headers in API requests - {"key":"value"}'
+        type: string
+        required: false
+        default: '{}'
+      create_pr:
+        description: 'Create PR with generated code'
+        type: boolean
+        required: false
+        default: true
+      create_branch_and_commit:
+        description: 'Create branch and commit with generated code'
+        type: boolean
+        required: false
+        default: false
+      check_api_changes:
+        description: 'Enable API change detection'
+        type: boolean
+        required: false
+        default: true
+
+# Add permissions 
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2  # Fetch last 2 commits to compare changes
+
+    - name: Get changed files
+      id: changed-files
+      run: |
+        # Get the list of changed files between previous and current commit
+        if [[ "${{ github.event_name }}" == "push" ]]; then
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "Files changed:"
+          echo "$CHANGED_FILES"
+        else
+          # For manual triggers, check all files
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "ALL_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "Manual trigger - checking all files"
+        fi
+
+    - name: codeglide MCP generator
+      uses: CodeGlide/codeglide-mcpgen@v1.0.5
+      with:
+        input_directory: ${{ inputs.input_directory || '.' }}
+        custom_headers: ${{ inputs.custom_headers || '{}' }}
+        create_pr: ${{ github.event_name == 'push' && 'true' || (inputs.create_pr == true && 'true' || 'false') }}  # Auto-create PR on push, or when manually enabled
+        create_branch_and_commit: ${{ github.event_name == 'push' && 'true' || (inputs.create_branch_and_commit == true && 'true' || 'false') }}
+        check_api_changes: ${{ inputs.check_api_changes || 'true' }}  # Enable API change detection by default
+        changed_files: ${{ steps.changed-files.outputs.changed_files }}
