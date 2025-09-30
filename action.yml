@@ -23,6 +23,15 @@ inputs:
     description: 'Custom headers to include in all API requests (JSON format, e.g., {"Authorization": "Bearer token", "X-API-Key": "key"})'
     required: false
     default: '{}'
+  check_api_changes:
+    description: 'Enable API change detection'
+    required: false
+    default: true
+    type: boolean
+  changed_files:
+    description: 'List of changed files (newline-separated) to check for API changes'
+    required: false
+    default: ''
 
 runs:
   using: "composite"
@@ -44,13 +53,15 @@ runs:
           -e GITHUB_REPOSITORY="${{ github.repository }}" \
           -e GITHUB_ACTOR="${{ github.actor }}" \
           -e GITHUB_ACTIONS=$GITHUB_ACTIONS \
+          -e CHECK_API_CHANGES="${{ inputs.check_api_changes }}" \
+          -e CHANGED_FILES="${{ inputs.changed_files }}" \
           --env CUSTOM_HEADERS='${{ inputs.custom_headers }}' \
           -v "$INPUT_PATH:/app/input" \
           -v "${{ github.workspace }}/generated-mcp:/app/output" \
           ghcr.io/codeglide/mcpgen:latest
 
     - name: Create PR / Branch
-      if: ${{ inputs.create_pr == true || inputs.create_branch_and_commit == true }}
+      if: ${{ (github.event_name == 'push' || inputs.create_pr == true || inputs.create_branch_and_commit == true) && hashFiles('generated-mcp/**') != '' }}
       shell: bash
       id: branch_creation
       continue-on-error: true
@@ -124,9 +135,8 @@ runs:
         fi
 
     - name: Upload MCP Server as Artifact
-      if: ${{ (inputs.create_pr != true && inputs.create_branch_and_commit != true) || (steps.branch_creation.outputs.success != 'true') }}
+      if: ${{ ((inputs.create_pr != true && inputs.create_branch_and_commit != true) || (steps.branch_creation.outputs.success != 'true')) && hashFiles('generated-mcp/**') != '' }}
       uses: actions/upload-artifact@v4
       with:
         name: generated-mcp-server
         path: generated-mcp/
-
