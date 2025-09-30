@@ -67,7 +67,7 @@ jobs:
         fi
 
     - name: codeglide MCP generator
-      uses: CodeGlide/codeglide-mcpgen@v1.0.5
+      uses: CodeGlide/codeglide-mcpgen@v1.0.10
       with:
         input_directory: ${{ inputs.input_directory || '.' }}
         custom_headers: ${{ inputs.custom_headers || '{}' }}
