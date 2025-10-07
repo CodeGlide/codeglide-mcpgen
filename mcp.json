@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "codeglide-mcp-server": {
+      "command": "bash",
+      "args": [
+        "-c",
+        "docker run --pull=always --platform linux/amd64 --rm -i -v $(pwd):$(pwd) -e MCP_CLIENT=$(whoami) -v codeglide-data:/var/codeglide/data ghcr.io/codeglide/mcpserver:latest"
+      ]
+    }
+  }
+}
